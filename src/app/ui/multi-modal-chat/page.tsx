@@ -4,11 +4,19 @@ import { DefaultChatTransport } from "ai";
 import { Upload } from "lucide-react";
 import Image from "next/image";
 import React, { useRef, useState } from "react";
+import { Document, Page as PDFPage } from "react-pdf";
+import { pdfjs } from "react-pdf";
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url
+).toString();
 
 const Page = () => {
   const [input, setInput] = useState("");
   const [files, setFiles] = useState<FileList | undefined>(undefined);
-  console.log(files);
+  const [numPages, setNumPages] = useState<number>();
+  const [pageNumber, setPageNumber] = useState<number>(1);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -67,14 +75,30 @@ const Page = () => {
                     }
                     if (part.mediaType.startsWith("application/pdf")) {
                       return (
-                        <iframe
-                          key={`${message.id}-${index}`}
-                          src={part.url}
-                          title={part.filename ?? `attachment-${index}`}
-                          width="500"
-                          height="600"
-                          //   type="application/pdf"
-                        />
+                        <div key={`${message.id}-${index}`}>
+                          {/* <iframe
+                            key={`${message.id}-${index}`}
+                            src={part.url}
+                            title={part.filename ?? `attachment-${index}`}
+                            width="500"
+                            height="600"
+                            //   type="application/pdf"
+                          /> */}
+                          <div>
+                            <Document
+                              file={part.url}
+                              onLoadSuccess={({ numPages }) =>
+                                setNumPages(numPages)
+                              }
+                              className="w-full h-80 overflow-y-auto"
+                            >
+                              <PDFPage pageNumber={numPages} />
+                            </Document>
+                            <p>
+                              Page {pageNumber} of {numPages}
+                            </p>
+                          </div>
+                        </div>
                       );
                     }
                     return null;
