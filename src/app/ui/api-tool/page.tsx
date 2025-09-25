@@ -3,7 +3,7 @@ import { ChatMessage } from "@/app/api/api-tool/route";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import React, { useState } from "react";
-import WeatherCard from "./weatherCard";
+import WeatherCard from "./WeatherCard";
 
 const Page = () => {
   const [input, setInput] = useState("");
